@@ -7,7 +7,7 @@ const HistoryPage: React.FC = () => {
   const router = useRouter();
 
   const handleBack = () => {
-    router.push("/");
+    router.push("/dashboard");
   };
 
   return (
