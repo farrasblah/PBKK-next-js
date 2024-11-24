@@ -47,32 +47,10 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
-      {/* Navbar */}
-      <nav className="bg-gray-800 px-4 py-3 shadow-md fixed top-0 w-full z-10">
-        <div className="flex justify-between items-center max-w-5xl mx-auto">
-          <h1 className="text-lg font-bold">Money Manager</h1>
-          <div className="flex gap-3">
-            {/* Tombol History */}
-            <button
-              onClick={navigateToHistory}
-              className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
-            >
-              Transaction History
-            </button>
-
-            {/* Tombol Add Transaction */}
-            <button 
-              onClick={toggleTransactionModal}
-              className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">
-              + Add Transaction
-            </button>
-          </div>
-        </div>
-      </nav>
       {/* Welcome */}
       <div className="mt-20 text-center">
         <h1 className="text-3xl font-bold">Welcome to Dashboard!</h1>
-        </div>
+      </div>
       {/* Content */}
       <div className="flex-grow mt-10 px-4">
         <div className="max-w-5xl mx-auto space-y-6">
@@ -269,7 +247,6 @@ const Home: React.FC = () => {
           </div>
         </div>
       )}
-
           {/* Balance Overview */}
           <div className="bg-gray-800 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-300">Your Balance</h2>

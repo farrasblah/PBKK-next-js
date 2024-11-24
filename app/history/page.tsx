@@ -20,19 +20,6 @@ const HistoryPage: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
-      {/* Navbar */}
-      <nav className="bg-gray-800 px-4 py-3 shadow-md fixed top-0 w-full z-10">
-        <div className="flex justify-between items-center max-w-5xl mx-auto">
-          <h1 className="text-lg font-bold">Money Manager - History</h1>
-          <button
-            onClick={handleBack}
-            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
-          >
-            Back
-          </button>
-        </div>
-      </nav>
-
       {/* Content */}
       <div className="flex-grow mt-16 px-4">
         <div className="max-w-5xl mx-auto">
