@@ -2,9 +2,13 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link"
+import { UserButton, useAuth } from "@clerk/nextjs";
 
 const Home: React.FC = () => {
   const router = useRouter();
+
+  const { userId } = useAuth();
 
   const navigateToHistory = () => {
     router.push("/history");
@@ -47,6 +51,48 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
+      {/* Navbar */}
+      <nav className="bg-gray-800 px-4 py-3 shadow-md fixed top-0 w-full z-10">
+        <div className="flex justify-between items-center max-w-5xl mx-auto">
+          <h1 className="text-lg font-bold text-white">Money Manager</h1>
+          <div className="text-white flex items-center">
+            {!userId && (
+              <>
+                <Link href="sign-in" className="text-gray-300 hover:text-white mr-4">
+                  Sign In
+                </Link>
+                <Link href="sign-up" className="text-gray-300 hover:text-white mr-4">
+                  Sign Up
+                </Link>
+              </>
+            )}
+            {userId && (
+              <>
+                {/* Button for History */}
+                <button
+                  onClick={navigateToHistory}
+                  className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded mr-2"
+                >
+                  Transaction History
+                </button>
+                {/* Button for Add Transaction */}
+                <button
+                  onClick={toggleTransactionModal}
+                  className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded mr-2"
+                >
+                  + Add Transaction
+                </button>
+                <Link href="profile" className="text-gray-300 hover:text-white mr-4">
+                  Profile
+                </Link>
+              </>
+            )}
+            <div className="ml-auto">
+              <UserButton afterSignOutUrl="/" />
+            </div>
+          </div>
+        </div>
+      </nav>
       {/* Welcome */}
       <div className="mt-20 text-center">
         <h1 className="text-3xl font-bold">Welcome to Dashboard!</h1>
