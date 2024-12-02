@@ -41,7 +41,7 @@ const HistoryPage: React.FC = () => {
               <thead className="bg-gray-800">
                 <tr>
                   <th className="border border-gray-700 px-4 py-2 text-gray-300">Date</th>
-                  <th className="border border-gray-700 px-4 py-2 text-gray-300">Description</th>
+                  <th className="border border-gray-700 px-4 py-2 text-gray-300">Type</th>
                   <th className="border border-gray-700 px-4 py-2 text-gray-300">Category</th>
                   <th className="border border-gray-700 px-4 py-2 text-gray-300">Amount</th>
                 </tr>
@@ -53,7 +53,7 @@ const HistoryPage: React.FC = () => {
                       {transaction.date}
                     </td>
                     <td className="border border-gray-700 px-4 py-2 text-gray-400">
-                      {transaction.purpose}
+                      {transaction.Type}
                     </td>
                     <td className="border border-gray-700 px-4 py-2 text-gray-400">
                       {transaction.category || "N/A"}

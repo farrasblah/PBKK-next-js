@@ -1,0 +1,49 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Transaction {
+  id         Int        @id @default(autoincrement())
+  type    String
+  amount     Decimal    @default(0)
+  date       DateTime
+  userId     Int
+  categoryId Int
+  user       users       @relation(fields: [userId], references: [id])
+  category   Category   @relation(fields: [categoryId], references: [id])
+}
+
+model Budgets {
+  id          Int        @id @default(autoincrement())
+  userId      Int
+  categoryId  Int
+  amount      Decimal    @default(0)
+  start_date  DateTime
+  end_date    DateTime
+  user        users       @relation(fields: [userId], references: [id])
+  category    Category   @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id           Int           @id @default(autoincrement())
+  name         String
+  transactions Transaction[] // Relation with Transaction
+  budgets      Budgets[]
+}
+
+model users {
+  id            Int           @id @default(autoincrement())
+  clerk_user_id String
+  transactions  Transaction[] // Relation with Transaction
+  budgets       Budgets[]
+}
+
+enum transactions_type {
+  income
+  expense
+}

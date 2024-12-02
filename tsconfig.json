@@ -21,14 +21,15 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "pages/api/create-user.js"  ],
   "exclude": [
     "node_modules"
   ]

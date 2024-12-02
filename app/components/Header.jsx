@@ -8,7 +8,7 @@ const Header = () => {
 
     return (
         <>
-            <nav className="bg-gray-900 py-4 px-6 flex items-center justify-between mb-5">
+            {/* <nav className="bg-gray-900 py-4 px-6 flex items-center justify-between mb-5">
                 <div className="flex items-center">
                     <Link href="/">
                         <div className="text-lg uppercase font-bold text-white">
@@ -36,7 +36,7 @@ const Header = () => {
                         <UserButton afterSignOutUrl="/" />
                     </div>
                 </div>
-            </nav>
+            </nav> */}
         </>
     )
 }

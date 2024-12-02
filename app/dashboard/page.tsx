@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link"
 import { UserButton, useAuth } from "@clerk/nextjs";
@@ -25,29 +25,84 @@ const Home: React.FC = () => {
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
 
+  const [categories, setCategories] = useState<Category[]>([]); 
+  const [category, setCategory] = useState("");
+
+  type Category = {
+    id: number;
+    name: string;
+  };
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories");
+  
+        // Periksa apakah response berstatus OK
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        // Pastikan respon berformat JSON
+        const contentType = response.headers.get("Content-Type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          setCategories(data);
+        } else {
+          throw new Error("Expected JSON response");
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+  
+    fetchCategories();
+  }, []);  
   const toggleTransactionModal = () => setShowTransactionModal(!showTransactionModal);
 
-  const handleAddTransaction = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddTransaction = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     const formData = new FormData(e.currentTarget);
+    const amount = parseFloat(formData.get("amount") as string);
     const newTransaction = {
-      purpose: formData.get("purpose") as string,
-      amount: parseFloat(formData.get("amount") as string),
+      type: formData.get("type") as string,
+      amount: isNaN(amount) ? 0 : amount,
       date: formData.get("date") as string,
-      category: formData.get("category") as string, // Ambil nilai category
+      category: formData.get("category") as string,
     };
 
-    // Save to localStorage (or send to a backend API)
-    const storedTransactions = JSON.parse(localStorage.getItem("transactions") || "[]");
-    const updatedTransactions = [...storedTransactions, newTransaction];
-    localStorage.setItem("transactions", JSON.stringify(updatedTransactions));
-
-    // Update state
-    setTransactions(updatedTransactions);
-
-    toggleTransactionModal(); // Close modal
-  };
+    console.log("Data to be sent to the server:", newTransaction);
+  
+    // Validasi
+    if (!newTransaction.type || !newTransaction.date || !newTransaction.category || newTransaction.amount <= 0) {
+      alert("Please fill in all fields correctly.");
+      return;
+    }
+  
+    try {
+      const response = await fetch("/api/transactions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTransaction),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to save transaction, status: ${response.status}`);
+      }
+  
+      const savedTransaction = await response.json();
+      console.log("Transaction saved:", savedTransaction);
+  
+      setTransactions((prevTransactions) => [...prevTransactions, savedTransaction]);
+      toggleTransactionModal();
+    } catch (error) {
+      console.error("Error saving transaction:", error);
+      alert(`Error: ${error.message || error}`);
+    }
+  };  
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
@@ -216,83 +271,91 @@ const Home: React.FC = () => {
                 </div>
             )}
 
-            {/* Modal Add Transaction */}
-      {showTransactionModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg w-96">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Add Transaction</h2>
-              <button onClick={toggleTransactionModal} className="text-gray-400 hover:text-white">
-                ×
-              </button>
+          {/* Modal Add Transaction */}
+          {showTransactionModal && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg w-96">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-semibold">Add Transaction</h2>
+                  <button onClick={toggleTransactionModal} className="text-gray-400 hover:text-white">
+                    ×
+                  </button>
+                </div>
+                <form onSubmit={handleAddTransaction}>
+                  <div className="mb-4">
+                  <label className="block text-sm mb-2">Type</label>
+                  <select
+                      name="type"
+                      className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      required
+                    >
+                      <option value="" disabled>
+                        Select a type
+                      </option>
+                      <option value="Salary">Salary</option>
+                      <option value="Groceries">Groceries</option>
+                      <option value="Utilities">Utilities</option>
+                      <option value="Shopping">Shopping</option>
+                      <option value="Entertainment">Entertainment</option>
+                      <option value="Others">Others</option>
+                    </select>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm mb-2">Amount</label>
+                    <input
+                      name="amount"
+                      type="number"
+                      placeholder="Enter amount"
+                      className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      required
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm mb-2">Date</label>
+                    <input
+                      name="date"
+                      type="date"
+                      className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      required
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm mb-2">Category</label>
+                    <select
+                    name="category"
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-700 rounded-lg"
+                    required
+                  >
+                    <option value="" disabled>
+                        Select a category
+                    </option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={toggleTransactionModal}
+                      className="mr-2 px-4 py-2 bg-gray-600 rounded hover:bg-gray-500"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-green-600 rounded hover:bg-green-500"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
-            <form onSubmit={handleAddTransaction}>
-              <div className="mb-4">
-                <label className="block text-sm mb-2">Purpose</label>
-                <input
-                  name="purpose"
-                  type="text"
-                  placeholder="Enter purpose"
-                  className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm mb-2">Amount</label>
-                <input
-                  name="amount"
-                  type="number"
-                  placeholder="Enter amount"
-                  className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm mb-2">Date</label>
-                <input
-                  name="date"
-                  type="date"
-                  className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm mb-2">Category</label>
-                <select
-                  name="category"
-                  defaultValue="" 
-                  className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                >
-                  <option value="" disabled>
-                    Select a category
-                  </option>
-                  <option value="income">Income</option>
-                  <option value="expense">Expense</option>
-                  <option value="savings">Savings</option>
-                  <option value="investment">Investment</option>
-                  <option value="others">Others</option>
-                </select>
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={toggleTransactionModal}
-                  className="mr-2 px-4 py-2 bg-gray-600 rounded hover:bg-gray-500"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-green-600 rounded hover:bg-green-500"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+          )}
           {/* Balance Overview */}
           <div className="bg-gray-800 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-300">Your Balance</h2>

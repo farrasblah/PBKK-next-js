@@ -1,11 +1,21 @@
-import { SignIn } from "@clerk/nextjs"
+import { SignIn } from "@clerk/nextjs";
 
 const SignInPage = () => {
   return (
-      <>
-        <SignIn />
-      </>
-  )
-}
+    <div style={styles.container}>
+      <SignIn />
+    </div>
+  );
+};
 
-export default SignInPage
+const styles = {
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh", // Tinggi penuh layar
+    backgroundColor: "#f5f5f5", // Warna latar belakang opsional
+  },
+};
+
+export default SignInPage;

@@ -1,11 +1,16 @@
-import { SignUp } from "@clerk/nextjs"
+"use client";
 
-const SignUpPage = () => {
+import { SignUp } from "@clerk/nextjs";
+
+export default function Page() {
   return (
-      <>
-        <SignUp />
-      </>
-  )
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      height: '100vh' 
+    }}>
+      <SignUp />
+    </div>
+  );
 }
-
-export default SignUpPage
