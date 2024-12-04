@@ -7,12 +7,41 @@ const HistoryPage: React.FC = () => {
   const router = useRouter();
 
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]); // Add state for categories
+  const [selectedType, setSelectedType] = useState<string | null>(null);
 
+  // Fetch transactions and categories when the component is mounted
   useEffect(() => {
-    // Load transactions from localStorage
-    const storedTransactions = JSON.parse(localStorage.getItem("transactions") || "[]");
-    setTransactions(storedTransactions);
+    // Fetch categories from the database or API
+    fetch('/api/categories')
+      .then(response => response.json())
+      .then(data => setCategories(data))
+      .catch(error => console.error('Error fetching categories:', error));
+
+    const storedType = localStorage.getItem("selectedType");
+    setSelectedType(storedType);
+    // Fetch transactions from the database (API or other sources)
+    fetch('/api/transactions')
+      .then(response => response.json())
+      .then(data => {
+        // Filter transactions by type if a type is selected
+        if (storedType) {
+          const filteredData = data.filter(
+            (transaction: any) => transaction.type === storedType
+          );
+          setTransactions(filteredData);
+        } else {
+          setTransactions(data);
+        }
+      })
+      .catch(error => console.error('Error fetching transactions:', error));
   }, []);
+
+  // Helper function to get category name by ID
+  const getCategoryName = (categoryId: number) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.name : "N/A";
+  };
 
   const handleBack = () => {
     router.push("/dashboard");
@@ -26,8 +55,7 @@ const HistoryPage: React.FC = () => {
           <h1 className="text-lg font-bold">Money Manager - History</h1>
           <button
             onClick={handleBack}
-            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded"
-          >
+            className="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">
             Back
           </button>
         </div>
@@ -53,10 +81,10 @@ const HistoryPage: React.FC = () => {
                       {transaction.date}
                     </td>
                     <td className="border border-gray-700 px-4 py-2 text-gray-400">
-                      {transaction.Type}
+                      {transaction.type} {/* 'Type' should be 'type' */}
                     </td>
                     <td className="border border-gray-700 px-4 py-2 text-gray-400">
-                      {transaction.category || "N/A"}
+                      {getCategoryName(transaction.categoryId)} {/* Display category name */}
                     </td>
                     <td
                       className={`border border-gray-700 px-4 py-2 ${

@@ -3,7 +3,14 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+};
+
 export default async function handler(req, res) {
+  
   if (req.method === 'GET') {
     // Fetch all transactions
     try {
@@ -14,42 +21,34 @@ export default async function handler(req, res) {
       res.status(500).json({ error: 'Error fetching transactions', message: error.message });
     }
   } else if (req.method === 'POST') {
-    // Create a new transaction
-    const { type, amount, date, userId, categoryId } = req.body;
-    // Validate the required fields
-    if (!type || !amount || !date || !userId || !categoryId) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-
     try {
-      // Check if user and category exist
-      const userExists = await prisma.user.findUnique({ where: { id: userId } });
-      if (!userExists) {
-        return res.status(400).json({ error: 'User does not exist' });
+      console.log("Received payload:", req.body);
+
+      // Periksa payload
+      const { type, amount, date, categoryId, userId } = req.body;
+
+      if (!type || !amount || !date || !categoryId || !userId) {
+        return res.status(400).json({ error: 'Missing required fields' });
       }
 
-      const categoryExists = await prisma.category.findUnique({ where: { id: categoryId } });
-      if (!categoryExists) {
-        return res.status(400).json({ error: 'Category does not exist' });
-      }
-
-      // Create the new transaction
-      const newTransaction = await prisma.transaction.create({
+      // Proses data dan simpan ke database
+      const savedTransaction = await prisma.transaction.create({
         data: {
           type,
-          amount: parseFloat(amount),
-          date: new Date(date), // Ensure date is in Date format
+          amount: parseFloat(amount), // Pastikan amount diubah menjadi angka
+          date: new Date(date), // Pastikan date menjadi objek Date
+          categoryId,
           userId,
-          categoryId: parseInt(category, 10),
         },
       });
-      res.status(201).json(newTransaction);
+
+      console.log("Saved transaction:", savedTransaction);
+      return res.status(200).json(savedTransaction);
     } catch (error) {
-      console.error('Error creating transaction:', error);
-      res.status(500).json({ error: 'Error creating transaction' });
+      console.error("Error in handler:", error);
+      return res.status(500).json({ error: 'Internal Server Error', message: error.message });
     }
   } else {
-    res.setHeader('Allow', ['GET', 'POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    res.status(405).json({ error: 'Method Not Allowed' });
   }
 }

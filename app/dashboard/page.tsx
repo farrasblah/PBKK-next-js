@@ -66,27 +66,28 @@ const Home: React.FC = () => {
     const formData = new FormData(e.currentTarget);
     const amount = parseFloat(formData.get("amount") as string);
     const newTransaction = {
-      type: formData.get("type") as string,
+      type: formData.get("type"),
       amount: isNaN(amount) ? 0 : amount,
-      date: formData.get("date") as string,
-      category: formData.get("category") as string,
+      date: formData.get("date"),
+      categoryId: parseInt(formData.get("category") as string),
+      userId: userId
     };
-
+  
     console.log("Data to be sent to the server:", newTransaction);
   
     // Validasi
-    if (!newTransaction.type || !newTransaction.date || !newTransaction.category || newTransaction.amount <= 0) {
+    if (!newTransaction.type || !newTransaction.date || Math.sign(newTransaction.amount) !== 1) {
       alert("Please fill in all fields correctly.");
       return;
     }
   
     try {
-      const response = await fetch("/api/transactions", {
+      const response = await fetch("http://localhost:3000/api/transactions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newTransaction),
+        body: JSON.stringify(newTransaction), // Mengonversi objek menjadi string JSON
       });
   
       if (!response.ok) {
@@ -102,8 +103,8 @@ const Home: React.FC = () => {
       console.error("Error saving transaction:", error);
       alert(`Error: ${error.message || error}`);
     }
-  };  
-
+  };
+  
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
       {/* Navbar */}

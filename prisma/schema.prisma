@@ -9,38 +9,36 @@ generator client {
 
 model Transaction {
   id         Int        @id @default(autoincrement())
-  type    String
-  amount     Decimal    @default(0)
+  type       String
+  amount    Decimal  @default(0) @db.Decimal(10, 2) 
   date       DateTime
-  userId     Int
+  userId     String
   categoryId Int
-  user       users       @relation(fields: [userId], references: [id])
   category   Category   @relation(fields: [categoryId], references: [id])
 }
 
 model Budgets {
   id          Int        @id @default(autoincrement())
-  userId      Int
+  userId      Int        // Mengubah ini menjadi Int, sesuai dengan tipe id di User
   categoryId  Int
-  amount      Decimal    @default(0)
+  amount    Decimal  @default(0) @db.Decimal(10, 2) 
   start_date  DateTime
   end_date    DateTime
-  user        users       @relation(fields: [userId], references: [id])
   category    Category   @relation(fields: [categoryId], references: [id])
 }
 
 model Category {
   id           Int           @id @default(autoincrement())
   name         String
-  transactions Transaction[] // Relation with Transaction
-  budgets      Budgets[]
+  transactions Transaction[] // Relasi dengan Transaction
+  budgets      Budgets[]     // Relasi dengan Budgets
 }
 
-model users {
+model User {
   id            Int           @id @default(autoincrement())
+
+
   clerk_user_id String
-  transactions  Transaction[] // Relation with Transaction
-  budgets       Budgets[]
 }
 
 enum transactions_type {
