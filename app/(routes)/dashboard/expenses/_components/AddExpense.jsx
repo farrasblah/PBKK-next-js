@@ -75,7 +75,7 @@ function AddExpense({ budgetId, user, refreshData }) {
     <div className="border p-5 rounded-2xl">
       <h2 className="font-bold text-lg">Add Expense</h2>
       <div className="mt-2">
-        <h2 className="text-black font-medium my-1">Expense Name</h2>
+        <h2 className="text-black dark:text-white font-medium my-1">Expense Name</h2>
         <Input
           placeholder="e.g. Bedroom Decor"
           value={name}
@@ -83,7 +83,7 @@ function AddExpense({ budgetId, user, refreshData }) {
         />
       </div>
       <div className="mt-2">
-        <h2 className="text-black font-medium my-1">Expense Amount</h2>
+        <h2 className="text-black dark:text-white font-medium my-1">Expense Amount</h2>
         <Input
           placeholder="e.g. 1000"
           value={amount}
@@ -92,13 +92,13 @@ function AddExpense({ budgetId, user, refreshData }) {
         />
       </div>
       <div className="mt-2">
-        <h2 className="text-black font-medium my-1">Expense Category</h2>
+        <h2 className="text-black dark:text-white font-medium my-1">Expense Category</h2>
         <select
           value={category}
           onChange={(e) => {const selectedCategory = e.target.value;
             console.log("Selected category (from dropdown):", selectedCategory);
             setCategory(selectedCategory);}}
-          className="w-full p-2 border rounded-md"
+          className="w-full p-2 border rounded-md bg-white text-black border-gray-300 dark:bg-gray-800 dark:text-white dark:border-gray-600"
         >
           <option value="">Select Category</option>
           {categories.map((cat, index) => (
