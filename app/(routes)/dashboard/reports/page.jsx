@@ -43,18 +43,23 @@ function Reports() {
    */
   const getIncomeList = async () => {
     try {
+      if (!user) return; // Ensure user is logged in
+      
+      // Assuming Incomes table has a 'createdBy' column that links to the user
       const result = await db
-      .select({
-        totalAmount: sql`SUM(CAST(${Incomes.amount} AS NUMERIC))`.mapWith(Number),
-      })
-      .from(Incomes);
-
+        .select({
+          totalAmount: sql`SUM(CAST(${Incomes.amount} AS NUMERIC))`.mapWith(Number),
+        })
+        .from(Incomes)
+        .where(eq(Incomes.createdBy, user?.primaryEmailAddress?.emailAddress)); // Filter by user's email
+      
       console.log("Corrected Total Income from DB:", result[0]?.totalAmount);
-      setIncomeList([{ totalAmount: result[0]?.totalAmount || 0 }]);
+      setIncomeList([{ totalAmount: result[0]?.totalAmount || 0 }]); // Store the income for the logged-in user
     } catch (error) {
       console.error("Error fetching income list:", error);
     }
   };
+  
 
   /**
    * Used to get All expenses belong to users

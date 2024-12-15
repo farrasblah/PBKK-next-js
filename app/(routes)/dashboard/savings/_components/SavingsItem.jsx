@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-function IncomeItem({ budget, onDelete, onUpdate }) {
+function SavingsItem({ budget, onDelete, onUpdate }) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
 
-  // Update form state with the correct income details when editing starts
+  // Update form state with the correct Savings details when editing starts
   useEffect(() => {
     if (isEditing) {
       setName(budget.name);
@@ -28,7 +28,7 @@ function IncomeItem({ budget, onDelete, onUpdate }) {
   };
 
   return (
-    <div className="p-5 border rounded-2xl hover:shadow-md cursor-pointer h-[160px] relative">
+    <div className="p-5 border rounded-2xl hover:shadow-md cursor-pointer h-[200px] relative">
       <div className="flex gap-2 items-center justify-between">
         <div className="flex gap-2 items-center">
           <h2 className="text-2xl p-3 px-4 bg-slate-100 rounded-full">{budget?.icon}</h2>
@@ -41,7 +41,7 @@ function IncomeItem({ budget, onDelete, onUpdate }) {
       </div>
 
       {/* Action Buttons */}
-      <div className="absolute bottom-5 right-3 flex gap-2">
+      <div className="absolute bottom-3 right-3 flex gap-2">
         <Button variant="outline" onClick={() => onDelete(budget.id)}>
           Delete
         </Button>
@@ -55,7 +55,7 @@ function IncomeItem({ budget, onDelete, onUpdate }) {
         <Dialog open={isEditing} onOpenChange={setIsEditing}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Update Income</DialogTitle>
+              <DialogTitle>Update Savings</DialogTitle>
             </DialogHeader>
             <div>
               <h2>Source Name</h2>
@@ -82,4 +82,4 @@ function IncomeItem({ budget, onDelete, onUpdate }) {
   );
 }
 
-export default IncomeItem;
+export default SavingsItem;

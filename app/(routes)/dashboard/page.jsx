@@ -9,70 +9,70 @@ import BarChartDashboard from "./_components/BarChartDashboard";
 import BudgetItem from "./budgets/_components/BudgetItem";
 import ExpenseListTable from "./expenses/_components/ExpenseListTable";
 function Dashboard() {
-  const { user } = useUser();
+   const { user } = useUser();
 
-  const [budgetList, setBudgetList] = useState([]);
-  const [incomeList, setIncomeList] = useState([]);
-  const [expensesList, setExpensesList] = useState([]);
-  useEffect(() => {
-    user && getBudgetList();
-  }, [user]);
-  /**
-   * used to get budget List
-   */
-  const getBudgetList = async () => {
-    const result = await db
-      .select({
-        ...getTableColumns(Budgets),
+//   const [budgetList, setBudgetList] = useState([]);
+//   const [incomeList, setIncomeList] = useState([]);
+//   const [expensesList, setExpensesList] = useState([]);
+//   useEffect(() => {
+//     user && getBudgetList();
+//   }, [user]);
+//   /**
+//    * used to get budget List
+//    */
+//   const getBudgetList = async () => {
+//     const result = await db
+//       .select({
+//         ...getTableColumns(Budgets),
 
-        totalSpend: sql`sum(${Expenses.amount})`.mapWith(Number),
-        totalItem: sql`count(${Expenses.id})`.mapWith(Number),
-      })
-      .from(Budgets)
-      .leftJoin(Expenses, eq(Budgets.id, Expenses.budgetId))
-      .where(eq(Budgets.createdBy, user?.primaryEmailAddress?.emailAddress))
-      .groupBy(Budgets.id)
-      .orderBy(desc(Budgets.id));
-    setBudgetList(result);
-    getAllExpenses();
-    getIncomeList();
-  };
+//         totalSpend: sql`sum(${Expenses.amount})`.mapWith(Number),
+//         totalItem: sql`count(${Expenses.id})`.mapWith(Number),
+//       })
+//       .from(Budgets)
+//       .leftJoin(Expenses, eq(Budgets.id, Expenses.budgetId))
+//       .where(eq(Budgets.createdBy, user?.primaryEmailAddress?.emailAddress))
+//       .groupBy(Budgets.id)
+//       .orderBy(desc(Budgets.id));
+//     setBudgetList(result);
+//     getAllExpenses();
+//     getIncomeList();
+//   };
 
-  /**
-   * Get Income stream list
-   */
-  const getIncomeList = async () => {
-    try {
-      const result = await db
-      .select({
-        totalAmount: sql`SUM(CAST(${Incomes.amount} AS NUMERIC))`.mapWith(Number),
-      })
-      .from(Incomes);
+//   /**
+//    * Get Income stream list
+//    */
+//   const getIncomeList = async () => {
+//     try {
+//       const result = await db
+//       .select({
+//         totalAmount: sql`SUM(CAST(${Incomes.amount} AS NUMERIC))`.mapWith(Number),
+//       })
+//       .from(Incomes);
 
-      console.log("Corrected Total Income from DB:", result[0]?.totalAmount);
-      setIncomeList([{ totalAmount: result[0]?.totalAmount || 0 }]);
-    } catch (error) {
-      console.error("Error fetching income list:", error);
-    }
-  };
+//       console.log("Corrected Total Income from DB:", result[0]?.totalAmount);
+//       setIncomeList([{ totalAmount: result[0]?.totalAmount || 0 }]);
+//     } catch (error) {
+//       console.error("Error fetching income list:", error);
+//     }
+//   };
 
-  /**
-   * Used to get All expenses belong to users
-   */
-  const getAllExpenses = async () => {
-    const result = await db
-      .select({
-        id: Expenses.id,
-        name: Expenses.name,
-        amount: Expenses.amount,
-        createdAt: Expenses.createdAt,
-      })
-      .from(Budgets)
-      .rightJoin(Expenses, eq(Budgets.id, Expenses.budgetId))
-      .where(eq(Budgets.createdBy, user?.primaryEmailAddress.emailAddress))
-      .orderBy(desc(Expenses.id));
-    setExpensesList(result);
-  };
+//   /**
+//    * Used to get All expenses belong to users
+//    */
+//   const getAllExpenses = async () => {
+//     const result = await db
+//       .select({
+//         id: Expenses.id,
+//         name: Expenses.name,
+//         amount: Expenses.amount,
+//         createdAt: Expenses.createdAt,
+//       })
+//       .from(Budgets)
+//       .rightJoin(Expenses, eq(Budgets.id, Expenses.budgetId))
+//       .where(eq(Budgets.createdBy, user?.primaryEmailAddress.emailAddress))
+//       .orderBy(desc(Expenses.id));
+//     setExpensesList(result);
+//   };
 
   return (
     <div className="p-8 bg-">
@@ -81,7 +81,7 @@ function Dashboard() {
         Here's what happenning with your money, Lets Manage your expense
       </p>
 
-      <CardInfo budgetList={budgetList} incomeList={incomeList} />
+      {/* <CardInfo budgetList={budgetList} incomeList={incomeList} />
       <div className="grid grid-cols-1 lg:grid-cols-3 mt-6 gap-5">
         <div className="lg:col-span-2">
           <BarChartDashboard budgetList={budgetList} />
@@ -104,7 +104,7 @@ function Dashboard() {
                 ></div>
               ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

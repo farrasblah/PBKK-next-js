@@ -40,11 +40,19 @@ function SideNav() {
       path: "/dashboard/expenses",
     },
     {
-      id: 5,
+      id: 5, 
+      name: "Savings", 
+      icon: ShieldCheck, 
+      path: "/dashboard/savings", 
+    },
+    {
+      id: 6,
       name: "Reports", // Tombol Summary
       icon: FileText, // Gunakan ikon lucide FileText
       path: "/dashboard/reports",
     },
+    
+    
     // {
     //   id: 2,
     //   name: "Investments",
