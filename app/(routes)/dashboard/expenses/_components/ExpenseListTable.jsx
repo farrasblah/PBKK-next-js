@@ -102,7 +102,7 @@ function ExpenseListTable({ expensesList, refreshData }) {
       {expensesList.map((expense) => (
         <div
           key={expense.id}
-          className="grid grid-cols-5 bg-slate-50 rounded-bl-xl rounded-br-xl p-2 text-black dark:text-white"
+          className="grid grid-cols-5 rounded-tl-xl rounded-tr-xl bg-slate-200 dark:bg-slate-800 p-2 mt-3"
         >
           <h2 className="dark:text-gray-300">{expense.name || "N/A"}</h2>
           <h2 className="dark:text-gray-300">{expense.amount || "0"}</h2>
