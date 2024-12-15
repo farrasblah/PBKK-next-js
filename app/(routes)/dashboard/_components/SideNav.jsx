@@ -8,6 +8,7 @@ import {
   CircleDollarSign,
   TrendingUp,
   TrendingDownIcon,
+  FileText,
 } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
@@ -27,16 +28,22 @@ function SideNav() {
       path: "/dashboard/incomes",
     },
     {
-      id: 2,
+      id: 3,
       name: "Budgets",
       icon: PiggyBank,
       path: "/dashboard/budgets",
     },
     {
-      id: 3,
+      id: 4,
       name: "Expenses",
       icon: ReceiptText,
       path: "/dashboard/expenses",
+    },
+    {
+      id: 5,
+      name: "Summary", // Tombol Summary
+      icon: FileText, // Gunakan ikon lucide FileText
+      path: "/dashboard/summary",
     },
     // {
     //   id: 2,

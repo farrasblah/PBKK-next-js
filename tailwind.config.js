@@ -74,4 +74,13 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+
+  // Add support for dark mode themes
+  variants: {
+    extend: {
+      backgroundColor: ["dark"],
+      textColor: ["dark"],
+      borderColor: ["dark"],
+    },
+  },
+};
