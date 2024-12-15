@@ -41,9 +41,9 @@ function SideNav() {
     },
     {
       id: 5,
-      name: "Summary", // Tombol Summary
+      name: "Reports", // Tombol Summary
       icon: FileText, // Gunakan ikon lucide FileText
-      path: "/dashboard/summary",
+      path: "/dashboard/reports",
     },
     // {
     //   id: 2,
