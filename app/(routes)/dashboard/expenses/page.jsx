@@ -22,7 +22,7 @@ function ExpensesScreen() {
       id:Expenses.id,
       name:Expenses.name,
       amount:Expenses.amount,
-      createdAt:Expenses.createdAt
+      date:Expenses.date
     }).from(Budgets)
     .rightJoin(Expenses,eq(Budgets.id,Expenses.budgetId))
     .where(eq(Budgets.createdBy,user?.primaryEmailAddress.emailAddress))

@@ -20,8 +20,7 @@ function IncomeList() {
     const result = await db
       .select({
         ...getTableColumns(Incomes),
-        totalSpend: sql`sum(${Expenses.amount})`.mapWith(Number),
-        totalItem: sql`count(${Expenses.id})`.mapWith(Number),
+        totalSpend: sql`sum(${Expenses.amount}::numeric)`.mapWith(Number),
       })
       .from(Incomes)
       .leftJoin(Expenses, eq(Incomes.id, Expenses.budgetId))
@@ -40,7 +39,7 @@ function IncomeList() {
   const handleUpdate = async (updatedIncome) => {
     await db
       .update(Incomes)
-      .set({ name: updatedIncome.name, amount: updatedIncome.amount })
+      .set({ name: updatedIncome.name, amount: updatedIncome.amount, date: updatedIncome.date })
       .where(eq(Incomes.id, updatedIncome.id));
     toast("Income updated successfully!");
     getIncomelist();

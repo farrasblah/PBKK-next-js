@@ -24,6 +24,7 @@ function CreateIncomes({ refreshData }) {
 
   const [name, setName] = useState();
   const [amount, setAmount] = useState();
+  const [date, setDate] = useState();
 
   const { user } = useUser();
 
@@ -38,6 +39,7 @@ function CreateIncomes({ refreshData }) {
         amount: amount,
         createdBy: user?.primaryEmailAddress?.emailAddress,
         icon: emojiIcon,
+        date: date,
       })
       .returning({ insertedId: Incomes.id });
 
@@ -86,16 +88,23 @@ function CreateIncomes({ refreshData }) {
                 <div className="mt-2">
                   <h2 className="text-black font-medium my-1">Source Name</h2>
                   <Input
-                    placeholder="e.g. Youtube"
+                    placeholder="e.g. Streamer"
                     onChange={(e) => setName(e.target.value)}
                   />
                 </div>
                 <div className="mt-2">
-                  <h2 className="text-black font-medium my-1">Montly Amount</h2>
+                  <h2 className="text-black font-medium my-1">Amount</h2>
                   <Input
                     type="number"
-                    placeholder="e.g. 5000$"
+                    placeholder="e.g. 5000"
                     onChange={(e) => setAmount(e.target.value)}
+                  />
+                </div>
+                <div className="mt-2">
+                  <h2 className="text-black font-medium my-1">Date</h2>
+                  <Input
+                    type="date"
+                    onChange={(e) => setDate(e.target.value)}
                   />
                 </div>
               </div>
@@ -104,7 +113,7 @@ function CreateIncomes({ refreshData }) {
           <DialogFooter className="sm:justify-start">
             <DialogClose asChild>
               <Button
-                disabled={!(name && amount)}
+                disabled={!(name && amount && date)}
                 onClick={() => onCreateIncomes()}
                 className="mt-5 w-full rounded-full"
               >

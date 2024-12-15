@@ -14,18 +14,17 @@ function Reports() {
   const [budgetList, setBudgetList] = useState([]);
   const [incomeList, setIncomeList] = useState([]);
   const [expensesList, setExpensesList] = useState([]);
+  
   useEffect(() => {
     user && getBudgetList();
   }, [user]);
-  /**
-   * used to get budget List
-   */
+
   const getBudgetList = async () => {
     const result = await db
       .select({
         ...getTableColumns(Budgets),
 
-        totalSpend: sql`sum(${Expenses.amount})`.mapWith(Number),
+        totalSpend: sql`sum(${Expenses.amount}::numeric)`.mapWith(Number),
         totalItem: sql`count(${Expenses.id})`.mapWith(Number),
       })
       .from(Budgets)
@@ -38,17 +37,13 @@ function Reports() {
     getIncomeList();
   };
 
-  /**
-   * Get Income stream list
-   */
   const getIncomeList = async () => {
     try {
-      if (!user) return; // Ensure user is logged in
+      if (!user) return;
       
-      // Assuming Incomes table has a 'createdBy' column that links to the user
       const result = await db
         .select({
-          totalAmount: sql`SUM(CAST(${Incomes.amount} AS NUMERIC))`.mapWith(Number),
+          totalAmount: sql`sum(${Incomes.amount}::numeric)`.mapWith(Number),
         })
         .from(Incomes)
         .where(eq(Incomes.createdBy, user?.primaryEmailAddress?.emailAddress)); // Filter by user's email
@@ -61,9 +56,6 @@ function Reports() {
   };
   
 
-  /**
-   * Used to get All expenses belong to users
-   */
   const getAllExpenses = async () => {
     const result = await db
       .select({

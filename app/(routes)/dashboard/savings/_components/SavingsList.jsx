@@ -24,6 +24,7 @@ function SavingsList() {
           name: Savings.name,
           amount: Savings.amount,
           budgetName: Budgets.name,
+          targetDate: Savings.targetDate,
         })
         .from(Savings)
         .leftJoin(Budgets, eq(Savings.budgetId, Budgets.id)) // Join sederhana
@@ -46,7 +47,7 @@ function SavingsList() {
   const handleUpdate = async (updatedSavings) => {
     await db
       .update(Savings)
-      .set({ name: updatedSavings.name, amount: updatedSavings.amount })
+      .set({ name: updatedSavings.name, amount: updatedSavings.amount, targetDate: updatedSavings.targetDate})
       .where(eq(Savings.id, updatedSavings.id));
     toast("Savings updated successfully!");
     getSavingslist();

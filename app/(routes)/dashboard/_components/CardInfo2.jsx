@@ -13,6 +13,7 @@ function CardInfo({ budgetList, incomeList }) {
   const [totalBudget, setTotalBudget] = useState(0);
   const [totalSpend, setTotalSpend] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
+  const [totalBalance, setTotalBalance] = useState(0);
 
   useEffect(() => {
     if (budgetList.length > 0 || incomeList.length > 0) {
@@ -34,9 +35,12 @@ function CardInfo({ budgetList, incomeList }) {
       totalIncome_ = incomeList[0].totalAmount; // Use aggregated total
     }
 
+    let totalBalance_ = totalIncome_ - totalSpend_;
+
     setTotalIncome(totalIncome_);
     setTotalBudget(totalBudget_);
     setTotalSpend(totalSpend_);
+    setTotalBalance(totalBalance_);
   };
 
   return (
@@ -46,12 +50,12 @@ function CardInfo({ budgetList, incomeList }) {
           <div className="mt-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <div className="p-7 border rounded-2xl flex items-center justify-between">
               <div>
-                <h2 className="text-sm">Total Budget</h2>
+                <h2 className="text-sm">Total Income</h2>
                 <h2 className="font-bold text-2xl">
-                  ${totalBudget}
+                  ${totalIncome}
                 </h2>
               </div>
-              <PiggyBank className="bg-blue-800 p-3 h-12 w-12 rounded-full text-white" />
+              <CircleDollarSign className="bg-blue-800 p-3 h-12 w-12 rounded-full text-white" />
             </div>
             <div className="p-7 border rounded-2xl flex items-center justify-between">
               <div>
@@ -62,21 +66,14 @@ function CardInfo({ budgetList, incomeList }) {
               </div>
               <ReceiptText className="bg-blue-800 p-3 h-12 w-12 rounded-full text-white" />
             </div>
-            <div className="p-7 border rounded-2xl flex items-center justify-between">
+              <div className="p-7 border rounded-2xl flex items-center justify-between">
               <div>
-                <h2 className="text-sm">Number of Budget</h2>
-                <h2 className="font-bold text-2xl">{budgetList?.length}</h2>
-              </div>
-              <Wallet className="bg-blue-800 p-3 h-12 w-12 rounded-full text-white" />
-            </div>
-            <div className="p-7 border rounded-2xl flex items-center justify-between">
-              <div>
-                <h2 className="text-sm">Total Income</h2>
+                <h2 className="text-sm">Your Balance</h2>
                 <h2 className="font-bold text-2xl">
-                  ${totalIncome}
+                  ${totalBalance}
                 </h2>
               </div>
-              <CircleDollarSign className="bg-blue-800 p-3 h-12 w-12 rounded-full text-white" />
+              <PiggyBank className="bg-blue-800 p-3 h-12 w-12 rounded-full text-white" />
             </div>
           </div>
         </div>

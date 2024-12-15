@@ -1,9 +1,9 @@
 import {
   integer,
-  numeric,
   pgTable,
   serial,
   varchar,
+  date,
 } from "drizzle-orm/pg-core";
 
 export const Budgets = pgTable("budgets", {
@@ -19,13 +19,15 @@ export const Incomes = pgTable("incomes", {
   name: varchar("name").notNull(),
   amount: varchar("amount").notNull(),
   icon: varchar("icon"),
+  date: date("date").notNull(),
   createdBy: varchar("createdBy").notNull(),
 });
 
 export const Expenses = pgTable("expenses", {
   id: serial("id").primaryKey(),
   name: varchar("name").notNull(),
-  amount: numeric("amount").notNull().default(0),
+  amount: varchar("amount").notNull(),
+  date: date("date").notNull(),
   budgetId: integer("budgetId").references(() => Budgets.id),
   createdAt: varchar("createdAt").notNull(),
 });
@@ -33,7 +35,9 @@ export const Expenses = pgTable("expenses", {
 export const Savings = pgTable("savings", {
   id: serial("id").primaryKey(),
   name: varchar("name").notNull(),
-  amount: numeric("amount").notNull().default(0),
+  amount: varchar("amount").notNull(),
+  icon: varchar("icon"),
+  targetDate: date("date").notNull(),
   budgetId: integer("budgetId").references(() => Budgets.id),
-  createdAt: varchar("createdAt").notNull(),
+  createdBy: varchar("createdBy").notNull(),
 });

@@ -11,6 +11,7 @@ function AddExpense({ budgetId, user, refreshData }) {
   const [name, setName] = useState(""); // Initialize with empty string
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
+  const [date, setDate] = useState();
   const [loading, setLoading] = useState(false);
 
   const categories = [
@@ -38,6 +39,7 @@ function AddExpense({ budgetId, user, refreshData }) {
       name,
       amount,
       category: categoryToUse,
+      date,
       budgetId,
       createdAt: moment().format("DD/MM/yyyy"),
     });
@@ -49,6 +51,7 @@ function AddExpense({ budgetId, user, refreshData }) {
           name: name.trim(),
           amount: parseFloat(amount),
           category: categoryToUse,
+          date: date,
           budgetId,
           createdAt: moment().format("DD/MM/yyyy"),
         })
@@ -61,6 +64,7 @@ function AddExpense({ budgetId, user, refreshData }) {
         setName("");
         setAmount("");
         setCategory("");
+        setDate();
         refreshData();
       }
     } catch (error) {
@@ -108,8 +112,15 @@ function AddExpense({ budgetId, user, refreshData }) {
           ))}
         </select>
       </div>
+      <div className="mt-2">
+        <h2 className="text-black font-medium my-1">Date</h2>
+        <Input
+          type="date"
+          onChange={(e) => setDate(e.target.value)}
+        />
+      </div>
       <Button
-        disabled={!(name && amount) || loading}
+        disabled={!(name && amount && category && date) || loading}
         onClick={addNewExpense}
         className="mt-3 w-full rounded-full"
       >

@@ -4,8 +4,8 @@ import SavingsList from "./_components/SavingsList";
 function Savings() {
   return (
     <div className="p-10">
-      <h2 className="font-bold text-3xl">My Savings Streams</h2>
-      <SavingsList />
+      <h2 className="font-bold text-3xl">My Savings</h2>
+      <SavingsList/>
     </div>
   );
 }

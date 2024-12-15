@@ -24,7 +24,8 @@ function ExpenseListTable({ expensesList, refreshData }) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
-
+  const [date, setDate] = useState();
+  
   const categories = [
     "Food",
     "Skincare",
@@ -47,6 +48,7 @@ function ExpenseListTable({ expensesList, refreshData }) {
           ? selectedExpense.category
           : "Others"
       );
+      setDate(selectedExpense.date || "");
     }
   }, [selectedExpense]);
 
@@ -73,6 +75,7 @@ function ExpenseListTable({ expensesList, refreshData }) {
         name,
         amount,
         category: categoryToUse,
+        date,
       })
       .where(eq(Expenses.id, selectedExpense.id))
       .returning();
@@ -107,7 +110,7 @@ function ExpenseListTable({ expensesList, refreshData }) {
           <h2 className="dark:text-gray-300">{expense.name || "N/A"}</h2>
           <h2 className="dark:text-gray-300">{expense.amount || "0"}</h2>
           <h2 className="dark:text-gray-300">{expense.category?.trim() ? expense.category : "Others"}</h2>
-          <h2 className="dark:text-gray-300">{expense.createdAt || "Unknown Date"}</h2>
+          <h2 className="dark:text-gray-300">{expense.date || expense.createdAt}</h2>
           <div className="flex space-x-2">
             {/* Edit Button with Dialog */}
             <Dialog>
@@ -170,6 +173,18 @@ function ExpenseListTable({ expensesList, refreshData }) {
                             </option>
                           ))}
                         </select>
+                      </div>
+                      {/* Expense Date */}
+                      <div className="mt-2">
+                        <h2 className="text-black dark:text-white font-medium my-1">
+                          Expense Date
+                        </h2>
+                        <Input
+                          type="date"
+                          value={date}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="dark:bg-slate-700 dark:text-white"
+                        />
                       </div>
                     </div>
                   </DialogDescription>
