@@ -47,24 +47,17 @@ function SideNav() {
     },
     {
       id: 6,
-      name: "Reports", // Tombol Summary
-      icon: FileText, // Gunakan ikon lucide FileText
+      name: "Reports", 
+      icon: FileText, 
       path: "/dashboard/reports",
     },
+    {
+      id: 7,
+      name: "Manage your categories", 
+      icon: FileText, 
+      path: "/dashboard/categories",
+    },
     
-    
-    // {
-    //   id: 2,
-    //   name: "Investments",
-    //   icon: TrendingUp,
-    //   path: "/dashboard/investments",
-    // },
-    // {
-    //   id: 2,
-    //   name: "Debts",
-    //   icon: TrendingDownIcon,
-    //   path: "/dashboard/debts",
-    // },
   ];
   const path = usePathname();
 
@@ -73,11 +66,6 @@ function SideNav() {
   }, [path]);
   return (
     <div className="h-screen p-5 border shadow-sm">
-      {/* <Image src={'/logo.svg'}
-        alt='logo'
-        width={160}
-        height={100}
-        /> */}
       <div className="mt-5">
         {menuList.map((menu, index) => (
           <Link href={menu.path} key={index}>
@@ -95,13 +83,6 @@ function SideNav() {
             </h2>
           </Link>
         ))}
-      </div>
-      <div
-        className="fixed bottom-10 p-5 flex gap-2
-            items-center"
-      >
-        <UserButton />
-        Profile
       </div>
     </div>
   );

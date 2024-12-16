@@ -6,55 +6,44 @@ import { Input } from "@/components/ui/input";
 import { Trash, PenBox } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
 
-function IncomeItem({ budget, onDelete, onUpdate }) {
+function CategoryItem({ budget, onDelete, onUpdate }) {
   const [isEditing, setIsEditing] = useState(false);
   const [emojiIcon, setEmojiIcon] = useState(budget?.icon);
   const [openEmojiPicker, setOpenEmojiPicker] = useState(false)
   const [name, setName] = useState("");
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("");
 
   // Update form state with the correct income details when editing starts
   useEffect(() => {
     if (isEditing) {
       setEmojiIcon(budget?.icon);
       setName(budget.name);
-      setAmount(budget.amount);
-      setDate(budget.date);
     }
   }, [isEditing, budget]);
 
   const handleUpdate = () => {
-    onUpdate({ id: budget.id, name, amount, icon, date });
+    onUpdate({ id: budget.id, name, icon });
     setIsEditing(false);
   };
 
-  const calculateProgressPerc = () => {
-    const perc = (budget.totalSpend / budget.amount) * 100;
-    return perc > 100 ? 100 : perc.toFixed(2);
-  };
-
   return (
-    <div className="p-5 border rounded-2xl hover:shadow-md cursor-pointer h-[160px] relative">
+    <div className="p-5 border rounded-2xl hover:shadow-md cursor-pointer h-[150px] relative max-w-72">
       <div className="flex gap-2 items-center justify-between">
         <div className="flex gap-2 items-center">
           <h2 className="text-2xl p-3 px-4 bg-slate-100 rounded-full">{budget?.icon}</h2>
           <div>
             <h2 className="font-bold">{budget.name}</h2>
-            <h2 className="text-sm text-gray-500">{budget.date}</h2>
           </div>
         </div>
-        <h2 className="font-bold text-primary text-lg">${budget.amount}</h2>
       </div>
 
       {/* Action Buttons */}
-      <div className="absolute bottom-5 right-3 flex gap-2">
+      <div className="absolute bottom-5 flex gap-2">
         {/* Edit Button */}
         <Button
           onClick={() => setIsEditing(true)}
           className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-500"
         >
-          <PenBox className="w-4 h-4" /> Edit
+          <PenBox className="w-4 h-4" />
         </Button>
 
         {/* Delete Button */}
@@ -62,7 +51,7 @@ function IncomeItem({ budget, onDelete, onUpdate }) {
           onClick={() => onDelete(budget.id)}
           className="flex items-center gap-2 px-4 py-2 rounded-full bg-red-500 text-white hover:bg-red-400"
         >
-          <Trash className="w-4 h-4" /> Delete
+          <Trash className="w-4 h-4" />
         </Button>
       </div>
 
@@ -71,7 +60,7 @@ function IncomeItem({ budget, onDelete, onUpdate }) {
         <Dialog open={isEditing} onOpenChange={setIsEditing}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Update Income</DialogTitle>
+              <DialogTitle>Update Category</DialogTitle>
             </DialogHeader>
             <div>
               <Button
@@ -90,24 +79,11 @@ function IncomeItem({ budget, onDelete, onUpdate }) {
                   }}
                 />
               </div>
-              <h2>Source Name</h2>
+              <h2>Category Name</h2>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. YouTube"
-              />
-              <h2 className="mt-3">Amount</h2>
-              <Input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="e.g. 5000"
-              />
-              <h2 className="mt-3">Date</h2>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
+                placeholder="e.g. Foods"
               />
             </div>
             <DialogFooter>
@@ -120,4 +96,4 @@ function IncomeItem({ budget, onDelete, onUpdate }) {
   );
 }
 
-export default IncomeItem;
+export default CategoryItem;

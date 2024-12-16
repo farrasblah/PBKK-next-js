@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { db } from "@/utils/dbConfig";
-import { Expenses } from "@/utils/schema";
+import { Expenses, Categories } from "@/utils/schema"; // Tambahkan Category Schema
 import { eq } from "drizzle-orm";
 import { Trash, PenBox } from "lucide-react";
 import {
@@ -23,31 +23,47 @@ function ExpenseListTable({ expensesList, refreshData }) {
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(""); // State untuk kategori (store categoryId)
   const [date, setDate] = useState();
-  
-  const categories = [
-    "Food",
-    "Skincare",
-    "Entertainment",
-    "Utilities",
-    "Supplies",
-    "Transportation",
-    "Healthcare",
-    "Shopping",
-    "Others",
-  ];
+  const [categories, setCategories] = useState([]); // State untuk kategori dari DB
 
+  // Ambil data kategori dari database saat komponen dimuat
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const result = await db.select().from(Categories); // Ambil data dari tabel kategori
+        setCategories(result); // Simpan ke state
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Ambil data pengeluaran dari database dan gabungkan dengan kategori
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const expensesResult = await db
+          .select()
+          .from(Expenses)
+          .leftJoin(Categories, eq(Expenses.categoryId, Categories.id)); // Join dengan tabel kategori
+        setExpensesList(expensesResult); // Simpan data pengeluaran
+      } catch (error) {
+        console.error("Failed to fetch expenses:", error);
+      }
+    };
+
+    fetchExpenses();
+  }, []);
+
+  // Isi form saat modal edit dibuka
   useEffect(() => {
     if (selectedExpense) {
-      // Safely set category and fallback to "Others"
       setName(selectedExpense.name || "");
       setAmount(selectedExpense.amount || "");
-      setCategory(
-        selectedExpense?.category?.trim()
-          ? selectedExpense.category
-          : "Others"
-      );
+      setCategory(selectedExpense.categoryId || ""); // Set categoryId
       setDate(selectedExpense.date || "");
     }
   }, [selectedExpense]);
@@ -67,14 +83,12 @@ function ExpenseListTable({ expensesList, refreshData }) {
 
   // Update expense handler
   const updateExpense = async () => {
-    const categoryToUse =
-      category && category.trim() ? category : "Others";
     const result = await db
       .update(Expenses)
       .set({
         name,
         amount,
-        category: categoryToUse,
+        categoryId: category, // Use categoryId for update
         date,
       })
       .where(eq(Expenses.id, selectedExpense.id))
@@ -105,14 +119,16 @@ function ExpenseListTable({ expensesList, refreshData }) {
       {expensesList.map((expense) => (
         <div
           key={expense.id}
-          className="grid grid-cols-5 rounded-tl-xl rounded-tr-xl bg-slate-200 dark:bg-slate-800 p-2 mt-3"
+          className="grid grid-cols-5 bg-slate-200 dark:bg-slate-800 p-2 mt-3 rounded"
         >
           <h2 className="dark:text-gray-300">{expense.name || "N/A"}</h2>
           <h2 className="dark:text-gray-300">{expense.amount || "0"}</h2>
-          <h2 className="dark:text-gray-300">{expense.category?.trim() ? expense.category : "Others"}</h2>
-          <h2 className="dark:text-gray-300">{expense.date || expense.createdAt}</h2>
+          <h2 className="dark:text-gray-300">
+            {categories.find((cat) => cat.id === expense.categoryId)?.name || "Others"}
+          </h2> {/* Display category name */}
+          <h2 className="dark:text-gray-300">{expense.date || "N/A"}</h2>
           <div className="flex space-x-2">
-            {/* Edit Button with Dialog */}
+            {/* Edit Button */}
             <Dialog>
               <DialogTrigger asChild>
                 <Button
@@ -128,8 +144,8 @@ function ExpenseListTable({ expensesList, refreshData }) {
                     Update Expense
                   </DialogTitle>
                   <DialogDescription className="dark:text-gray-300">
+                    {/* Expense Form */}
                     <div className="mt-5">
-                      {/* Expense Name */}
                       <div className="mt-2">
                         <h2 className="text-black dark:text-white font-medium my-1">
                           Expense Name
@@ -141,7 +157,6 @@ function ExpenseListTable({ expensesList, refreshData }) {
                           className="dark:bg-slate-700 dark:text-white"
                         />
                       </div>
-                      {/* Expense Amount */}
                       <div className="mt-2">
                         <h2 className="text-black dark:text-white font-medium my-1">
                           Expense Amount
@@ -154,7 +169,6 @@ function ExpenseListTable({ expensesList, refreshData }) {
                           className="dark:bg-slate-700 dark:text-white"
                         />
                       </div>
-                      {/* Expense Category */}
                       <div className="mt-2">
                         <h2 className="text-black dark:text-white font-medium my-1">
                           Expense Category
@@ -167,14 +181,13 @@ function ExpenseListTable({ expensesList, refreshData }) {
                           <option value="" disabled>
                             Select Category
                           </option>
-                          {categories.map((cat, index) => (
-                            <option key={index} value={cat}>
-                              {cat}
+                          {categories.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                              {cat.name}
                             </option>
                           ))}
                         </select>
                       </div>
-                      {/* Expense Date */}
                       <div className="mt-2">
                         <h2 className="text-black dark:text-white font-medium my-1">
                           Expense Date
@@ -189,16 +202,14 @@ function ExpenseListTable({ expensesList, refreshData }) {
                     </div>
                   </DialogDescription>
                 </DialogHeader>
-                <DialogFooter className="sm:justify-start">
-                  <DialogClose asChild>
-                    <Button
-                      disabled={!(name && amount)}
-                      onClick={updateExpense}
-                      className="mt-5 w-full rounded-full dark:bg-blue-600 hover:dark:bg-blue-500"
-                    >
-                      Update Expense
-                    </Button>
-                  </DialogClose>
+                <DialogFooter>
+                  <Button
+                    disabled={!(name && amount)}
+                    onClick={updateExpense}
+                    className="mt-5 w-full rounded-full dark:bg-blue-600 hover:dark:bg-blue-500"
+                  >
+                    Update Expense
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
