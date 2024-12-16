@@ -1,5 +1,3 @@
-import formatNumber from "@/utils";
-
 import {
   PiggyBank,
   ReceiptText,
@@ -9,7 +7,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
-function CardInfo({ budgetList, incomeList }) {
+function CardInfo({ budgetList, incomeList, savingsList }) {
   const [totalBudget, setTotalBudget] = useState(0);
   const [totalSpend, setTotalSpend] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
@@ -30,6 +28,10 @@ function CardInfo({ budgetList, incomeList }) {
       totalBudget_ += Number(element.amount);
       totalSpend_ += element.totalSpend;
     });
+
+    // savingsList.forEach((element) => {
+    //   totalSpend_ += element.totalSpend;
+    // });
 
     if (incomeList.length > 0) {
       totalIncome_ = incomeList[0].totalAmount; // Use aggregated total

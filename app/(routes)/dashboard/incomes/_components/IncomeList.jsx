@@ -4,9 +4,9 @@ import CreateIncomes from "./CreateIncomes";
 import { db } from "@/utils/dbConfig";
 import { desc, eq, getTableColumns, sql } from "drizzle-orm";
 import { Incomes, Expenses } from "@/utils/schema";
-import { useUser } from "@clerk/nextjs";
 import IncomeItem from "./IncomeItem";
 import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
 
 function IncomeList() {
   const [incomelist, setIncomelist] = useState([]);

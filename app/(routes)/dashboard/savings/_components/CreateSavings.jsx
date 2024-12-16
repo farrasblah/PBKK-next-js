@@ -25,6 +25,8 @@ function CreateSavings({ refreshData }) {
   const [name, setName] = useState();
   const [amount, setAmount] = useState();
   const [targetDate, setTargetDate] = useState();
+  const [targetAmount, setTargetAmount] = useState();
+  const [totalSaved, setTotalSaved] = useState();
 
   const { user } = useUser();
 
@@ -40,8 +42,11 @@ function CreateSavings({ refreshData }) {
         createdBy: user?.primaryEmailAddress?.emailAddress,
         icon: emojiIcon,
         targetDate: targetDate,
+        targetAmount: targetAmount,
+        totalSaved: totalSaved || 0,
       })
       .returning({ insertedId: Savings.id });
+      console.log("Inserted Savings:", result);
 
     if (result) {
       refreshData();
@@ -93,7 +98,7 @@ function CreateSavings({ refreshData }) {
                   />
                 </div>
                 <div className="mt-2">
-                  <h2 className="text-black font-medium my-1">Target Amount</h2>
+                  <h2 className="text-black font-medium my-1">Amount</h2>
                   <Input
                     type="number"
                     placeholder="e.g. 5000$"
@@ -107,13 +112,29 @@ function CreateSavings({ refreshData }) {
                     onChange={(e) => setTargetDate(e.target.value)}
                   />
                 </div>
+                <div className="mt-2">
+                  <h2 className="text-black font-medium my-1">Target Amount</h2>
+                  <Input
+                    type="number"
+                    placeholder="e.g. 5000$"
+                    onChange={(e) => setTargetAmount(e.target.value)}
+                  />
+                </div>
+                <div className="mt-2">
+                  <h2 className="text-black font-medium my-1">Total Saved</h2>
+                  <Input
+                    type="number"
+                    placeholder="e.g. 0"
+                    onChange={(e) => setTotalSaved(e.target.value)}
+                  />
+                </div>
               </div>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-start">
             <DialogClose asChild>
               <Button
-                disabled={!(name && amount && targetDate)}
+                disabled={!(name && amount && targetDate && targetAmount)}
                 onClick={() => onCreateSavings()}
                 className="mt-5 w-full rounded-full"
               >

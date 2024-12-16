@@ -1,33 +1,50 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { db } from "@/utils/dbConfig"; // Pastikan import dbConfig dengan benar
-import { Expenses, Categories } from "@/utils/schema"; // Pastikan untuk mengimpor schema yang benar
+import { db } from "@/utils/dbConfig";
+import { Expenses, Categories } from "@/utils/schema";
 import { Loader } from "lucide-react";
 import moment from "moment";
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs"; // Clerk for user authentication
+import { eq } from "drizzle-orm"; // Adjust this based on your ORM or query builder
 
-function AddExpense({ budgetId, user, refreshData }) {
+function AddExpense({ budgetId, refreshData }) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
   const [date, setDate] = useState();
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]); // State untuk kategori
+  const [categories, setCategories] = useState([]); // State for categories
+  const { user } = useUser(); // Get the logged-in user
 
-  // Ambil kategori dari database ketika komponen dimuat
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const result = await db.select().from(Categories); // Ambil data kategori dari table
-        setCategories(result); // Simpan data kategori dalam state
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
+    console.log("Logged-in user:", user);
+  }, [user]);
 
-    fetchCategories();
-  }, []); // Hanya dijalankan sekali saat komponen dimuat
+useEffect(() => {
+  const fetchCategories = async () => {
+    if (!user) return;
+
+    try {
+      console.log("Fetching categories for:", user.primaryEmailAddress?.emailAddress);
+      const result = await db
+        .select()
+        .from(Categories)
+        .where(eq(Categories.createdBy, user.primaryEmailAddress?.emailAddress));
+      if (result.length === 0) {
+        console.warn("No categories found for the user.");
+        toast.info("No categories found. Please create one.");
+      }
+      setCategories(result);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error(`Failed to fetch categories: ${error.message}`);
+    }
+  };
+
+  fetchCategories();
+}, [user]);
 
   /**
    * Add New Expense
@@ -35,25 +52,15 @@ function AddExpense({ budgetId, user, refreshData }) {
   const addNewExpense = async () => {
     setLoading(true);
 
-    // Cari categoryId berdasarkan category name yang dipilih
+    // Find the categoryId based on the selected category name
     const selectedCategory = categories.find((cat) => cat.name === category);
-    const categoryIdToUse = selectedCategory ? selectedCategory.id : null; // Jika tidak ditemukan, fallback ke null
+    const categoryIdToUse = selectedCategory ? selectedCategory.id : null;
 
     if (!categoryIdToUse) {
       toast.error("Please select a valid category.");
       setLoading(false);
-      return; // Jika kategori tidak valid, hentikan proses
+      return; // Stop the process if the category is invalid
     }
-
-    console.log("Final category ID to use:", categoryIdToUse);
-    console.log("Sending to database:", {
-      name,
-      amount,
-      categoryId: categoryIdToUse, // Gunakan categoryId, bukan category name
-      date,
-      budgetId,
-      createdAt: moment().format("DD/MM/yyyy"),
-    });
 
     try {
       const result = await db
@@ -61,21 +68,19 @@ function AddExpense({ budgetId, user, refreshData }) {
         .values({
           name: name.trim(),
           amount: parseFloat(amount),
-          categoryId: categoryIdToUse, // Kirim categoryId
-          date: date,
+          categoryId: categoryIdToUse,
+          date,
           budgetId,
           createdAt: moment().format("DD/MM/yyyy"),
         })
         .returning();
-
-      console.log("Database response:", result);
 
       if (result && result[0]) {
         toast.success("New Expense Added!");
         setName("");
         setAmount("");
         setCategory("");
-        setDate();
+        setDate("");
         refreshData();
       }
     } catch (error) {
@@ -103,7 +108,7 @@ function AddExpense({ budgetId, user, refreshData }) {
           placeholder="e.g. 2"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          type="number" // Ensures only numbers are entered
+          type="number"
         />
       </div>
       <div className="mt-2">
@@ -125,6 +130,7 @@ function AddExpense({ budgetId, user, refreshData }) {
         <h2 className="text-black font-medium my-1">Date</h2>
         <Input
           type="date"
+          value={date}
           onChange={(e) => setDate(e.target.value)}
         />
       </div>
